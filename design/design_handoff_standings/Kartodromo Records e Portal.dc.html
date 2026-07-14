@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800;1,900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0c0c0d;font-family:Barlow,system-ui,sans-serif}
+a{color:#FFD200}a:hover{color:#ffdf4d}
+[data-lang="en"] [lang="pt"]{display:none}
+[data-lang="pt"] [lang="en"]{display:none}
+input,select{font-family:Barlow,sans-serif}
+::placeholder{color:#6a6a6a}
+</style>
+</helmet>
+<div data-lang="{{ lang }}" style="min-height:100vh;background:#0c0c0d;color:#fff">
+
+<!-- ============ HEADER ============ -->
+<header style="position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:24px;padding:12px 32px;background:rgba(12,12,13,.97);border-bottom:1px solid rgba(255,255,255,.08);flex-wrap:wrap">
+  <a onClick="{{ goRecords }}" style="cursor:pointer;display:flex;align-items:center"><img src="https://www.kartodromovilareal.com/themes/kartodromo/images/assets/logo.png" alt="Kartódromo Vila Real" style="height:42px;width:auto"></a>
+  <nav style="display:flex;gap:24px;flex-wrap:wrap">
+    <a style="cursor:default;font:600 14px/1 Barlow,sans-serif;letter-spacing:.12em;color:#8a8a8a;text-decoration:none">KARTING</a>
+    <a style="cursor:default;font:600 14px/1 Barlow,sans-serif;letter-spacing:.12em;color:#8a8a8a;text-decoration:none">LASERGAME</a>
+    <a onClick="{{ goRecords }}" style="cursor:pointer;font:600 14px/1 Barlow,sans-serif;letter-spacing:.12em;color:{{ navC.records }};text-decoration:none"><span lang="pt">RECORDES</span><span lang="en">RECORDS</span></a>
+    <a onClick="{{ goPortal }}" style="cursor:pointer;font:600 14px/1 Barlow,sans-serif;letter-spacing:.12em;color:{{ navC.portal }};text-decoration:none">PORTAL</a>
+  </nav>
+  <div style="margin-left:auto;display:flex;align-items:center;gap:16px">
+    <div style="display:flex;border:1px solid rgba(255,255,255,.2);border-radius:4px;overflow:hidden">
+      <a onClick="{{ setPt }}" style="cursor:pointer;font:700 11px/1 Barlow,sans-serif;padding:7px 9px;background:{{ ptBg }};color:{{ ptColor }};text-decoration:none">PT</a>
+      <a onClick="{{ setEn }}" style="cursor:pointer;font:700 11px/1 Barlow,sans-serif;padding:7px 9px;background:{{ enBg }};color:{{ enColor }};text-decoration:none">EN</a>
+    </div>
+    <sc-if value="{{ authed }}" hint-placeholder-val="{{ false }}">
+      <a onClick="{{ goDash }}" style="cursor:pointer;display:flex;align-items:center;gap:8px;text-decoration:none"><span style="width:30px;height:30px;border-radius:50%;background:#FFD200;color:#0c0c0d;font:800 14px/30px 'Barlow Condensed',sans-serif;text-align:center">{{ driver.initials }}</span><span style="font:600 13px/1 Barlow,sans-serif;color:#fff">{{ driver.first }}</span></a>
+    </sc-if>
+    <sc-if value="{{ notAuthed }}" hint-placeholder-val="{{ true }}">
+      <a onClick="{{ goPortal }}" style="cursor:pointer;font:700 13px/1 Barlow,sans-serif;letter-spacing:.06em;padding:12px 18px;background:#FFD200;color:#0c0c0d;text-decoration:none;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)"><span lang="pt">ENTRAR</span><span lang="en">SIGN IN</span></a>
+    </sc-if>
+  </div>
+</header>
+
+<!-- ============ RECORDS (PUBLIC) ============ -->
+<sc-if value="{{ isRecords }}" hint-placeholder-val="{{ true }}">
+<main data-screen-label="Recordes">
+  <!-- hero band -->
+  <div style="position:relative;overflow:hidden;border-bottom:1px solid rgba(255,255,255,.08)">
+    <div style="position:absolute;inset:0;background:repeating-linear-gradient(115deg,transparent 0 340px,rgba(255,210,0,.05) 340px 420px)"></div>
+    <div style="position:relative;max-width:1180px;margin:0 auto;padding:44px clamp(20px,4vw,48px) 34px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <span style="width:34px;height:12px;background:repeating-conic-gradient(#fff 0 25%,#0c0c0d 0 50%) 0 0/6px 6px;border:1px solid rgba(255,255,255,.3)"></span>
+        <span style="font:700 13px/1 Barlow,sans-serif;letter-spacing:.28em;color:#FFD200"><span lang="pt">TEMPOS OFICIAIS · PISTA 1 KM</span><span lang="en">OFFICIAL TIMES · 1 KM TRACK</span></span>
+      </div>
+      <h1 style="margin:0;font:italic 900 clamp(48px,7vw,84px)/.9 'Barlow Condensed',sans-serif;color:#fff;text-transform:uppercase"><span lang="pt">Tabela de recordes</span><span lang="en">Track records</span></h1>
+      <p style="margin:12px 0 0;max-width:520px;font:400 16px/1.55 Barlow,sans-serif;color:#b9b9b9"><span lang="pt">As voltas mais rápidas registadas pelo sistema de cronometragem. Atualizado a cada sessão.</span><span lang="en">The fastest laps recorded by our timing system. Updated after every session.</span></p>
+    </div>
+  </div>
+
+  <div style="max-width:1180px;margin:0 auto;padding:26px clamp(20px,4vw,48px) 60px">
+    <!-- period toggle -->
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <sc-for list="{{ periodPills }}" as="p" hint-placeholder-count="3">
+          <a onClick="{{ p.on }}" style="cursor:pointer;font:800 14px/1 'Barlow Condensed',sans-serif;letter-spacing:.12em;text-transform:uppercase;padding:11px 20px;text-decoration:none;background:{{ p.bg }};color:{{ p.color }};border:1px solid {{ p.border }}">{{ p.label }}</a>
+        </sc-for>
+      </div>
+      <div style="font:700 12px/1 Barlow,sans-serif;letter-spacing:.16em;color:#7d7d7d">{{ periodRange }}</div>
+    </div>
+    <!-- segment toggle -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px">
+      <sc-for list="{{ segPills }}" as="s" hint-placeholder-count="5">
+        <a onClick="{{ s.on }}" style="cursor:pointer;font:600 12px/1 Barlow,sans-serif;letter-spacing:.06em;padding:9px 15px;border-radius:999px;text-decoration:none;background:{{ s.bg }};color:{{ s.color }};border:1px solid {{ s.border }}">{{ s.label }}</a>
+      </sc-for>
+    </div>
+
+    <!-- podium -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:22px">
+      <sc-for list="{{ podium }}" as="p" hint-placeholder-count="3">
+        <div style="position:relative;background:#1b1b1d;border:1px solid rgba(255,255,255,.08);border-top:3px solid {{ p.accent }};padding:20px 22px;overflow:hidden">
+          <div style="position:absolute;right:-6px;top:-18px;font:italic 900 96px/1 'Barlow Condensed',sans-serif;color:rgba(255,255,255,.05)">{{ p.rank }}</div>
+          <div style="position:relative;font:700 11px/1 Barlow,sans-serif;letter-spacing:.2em;color:{{ p.accent }}">{{ p.tag }}</div>
+          <div style="position:relative;font:italic 800 26px/1 'Barlow Condensed',sans-serif;color:#fff;margin-top:10px">{{ p.name }}</div>
+          <div style="position:relative;font:italic 900 40px/1 'Barlow Condensed',sans-serif;color:#FFD200;margin-top:8px">{{ p.lap }}<span style="font-size:20px;color:#9a9a9a">s</span></div>
+          <div style="position:relative;font:500 13px/1.4 Barlow,sans-serif;color:#a5a5a5;margin-top:8px">{{ p.cls }} · {{ p.cat }} · {{ p.date }}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <!-- full table -->
+    <div style="background:#131314;border:1px solid rgba(255,255,255,.08)">
+      <div style="display:grid;grid-template-columns:56px 1fr 130px 110px 100px 70px;gap:8px;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.1);font:700 11px/1 Barlow,sans-serif;letter-spacing:.16em;color:#7d7d7d">
+        <span>POS</span><span><span lang="pt">PILOTO</span><span lang="en">DRIVER</span></span><span><span lang="pt">MELHOR VOLTA</span><span lang="en">BEST LAP</span></span><span>KART</span><span>GAP</span><span style="text-align:right"><span lang="pt">VOLTAS</span><span lang="en">LAPS</span></span>
+      </div>
+      <sc-for list="{{ rows }}" as="r" hint-placeholder-count="8">
+        <div style="display:grid;grid-template-columns:56px 1fr 130px 110px 100px 70px;gap:8px;align-items:center;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.06);background:{{ r.rowBg }}">
+          <span style="font:italic 900 22px/1 'Barlow Condensed',sans-serif;color:{{ r.rankColor }}">{{ r.rank }}</span>
+          <span style="font:600 16px/1.2 Barlow,sans-serif;color:#fff">{{ r.name }} <span style="font:500 12px Barlow,sans-serif;color:#7d7d7d">{{ r.catTag }}</span></span>
+          <span style="font:800 20px/1 'Barlow Condensed',sans-serif;color:#FFD200">{{ r.lap }}<span style="font-size:13px;color:#8a8a8a">s</span></span>
+          <span style="font:600 13px/1 Barlow,sans-serif;color:#c9c9c9">{{ r.cls }}</span>
+          <span style="font:600 14px/1 'Barlow Condensed',sans-serif;color:#9a9a9a">{{ r.gap }}</span>
+          <span style="font:600 15px/1 Barlow,sans-serif;color:#c9c9c9;text-align:right">{{ r.laps }}</span>
+        </div>
+      </sc-for>
+      <div style="padding:14px 20px;font:400 12px/1.5 Barlow,sans-serif;color:#7d7d7d"><span lang="pt">Cronometragem oficial Kartódromo Vila Real. Tempos sujeitos a verificação.</span><span lang="en">Official Kartódromo Vila Real timing. Times subject to verification.</span></div>
+    </div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:22px;background:#FFD200;padding:22px 26px">
+      <div style="font:italic 900 clamp(24px,3vw,34px)/1 'Barlow Condensed',sans-serif;color:#0c0c0d;text-transform:uppercase"><span lang="pt">Queres o teu nome aqui?</span><span lang="en">Want your name up here?</span></div>
+      <a onClick="{{ goPortal }}" style="cursor:pointer;font:800 15px/1 'Barlow Condensed',sans-serif;letter-spacing:.1em;padding:15px 24px;background:#0c0c0d;color:#FFD200;text-decoration:none;white-space:nowrap"><span lang="pt">CRIAR PERFIL DE PILOTO</span><span lang="en">CREATE A DRIVER PROFILE</span></a>
+    </div>
+  </div>
+</main>
+</sc-if>
+
+<!-- ============ LOGIN ============ -->
+<sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
+<main data-screen-label="Login" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));min-height:calc(100vh - 67px)">
+  <div style="position:relative;overflow:hidden;background:#131314;display:flex;flex-direction:column;justify-content:center;gap:20px;padding:clamp(32px,5vw,64px)">
+    <div style="position:absolute;inset:0;background:repeating-linear-gradient(115deg,transparent 0 220px,rgba(255,210,0,.05) 220px 280px)"></div>
+    <div style="position:relative">
+      <div style="font:700 13px/1 Barlow,sans-serif;letter-spacing:.28em;color:#FFD200;margin-bottom:14px"><span lang="pt">PORTAL DO PILOTO</span><span lang="en">DRIVER PORTAL</span></div>
+      <h1 style="margin:0;font:italic 900 clamp(44px,6vw,72px)/.9 'Barlow Condensed',sans-serif;color:#fff;text-transform:uppercase"><span lang="pt">Bem-vindo<br>de volta<br>à pista.</span><span lang="en">Welcome<br>back to<br>the track.</span></h1>
+      <p style="margin:16px 0 0;max-width:380px;font:400 16px/1.55 Barlow,sans-serif;color:#b9b9b9"><span lang="pt">Consulta os teus tempos, recordes pessoais e histórico de corridas num só sítio.</span><span lang="en">Track your times, personal records and race history all in one place.</span></p>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:center;padding:clamp(32px,5vw,56px)">
+    <div style="width:100%;max-width:380px">
+      <h2 style="margin:0 0 4px;font:italic 800 34px/1 'Barlow Condensed',sans-serif;color:#fff;text-transform:uppercase"><span lang="pt">Entrar</span><span lang="en">Sign in</span></h2>
+      <p style="margin:0 0 24px;font:400 14px/1.5 Barlow,sans-serif;color:#7d7d7d"><span lang="pt">Acede à tua conta de piloto.</span><span lang="en">Access your driver account.</span></p>
+      <label style="display:block;font:700 11px/1 Barlow,sans-serif;letter-spacing:.16em;color:#7d7d7d;margin-bottom:7px">EMAIL</label>
+      <input type="email" placeholder="piloto@email.com" style="width:100%;box-sizing:border-box;background:#1b1b1d;border:1px solid rgba(255,255,255,.14);color:#fff;font-size:15px;padding:13px 14px;margin-bottom:16px;outline:none">
+      <label style="display:block;font:700 11px/1 Barlow,sans-serif;letter-spacing:.16em;color:#7d7d7d;margin-bottom:7px"><span lang="pt">PALAVRA-PASSE</span><span lang="en">PASSWORD</span></label>
+      <input type="password" placeholder="••••••••" style="width:100%;box-sizing:border-box;background:#1b1b1d;border:1px solid rgba(255,255,255,.14);color:#fff;font-size:15px;padding:13px 14px;margin-bottom:10px;outline:none">
+      <div style="text-align:right;margin-bottom:18px"><a style="cursor:pointer;font:600 12px/1 Barlow,sans-serif;color:#7d7d7d;text-decoration:none"><span lang="pt">Esqueceste a palavra-passe?</span><span lang="en">Forgot password?</span></a></div>
+      <a onClick="{{ doLogin }}" style="cursor:pointer;display:block;text-align:center;font:800 16px/1 'Barlow Condensed',sans-serif;letter-spacing:.1em;padding:16px;background:#FFD200;color:#0c0c0d;text-decoration:none;clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)"><span lang="pt">ENTRAR</span><span lang="en">SIGN IN</span></a>
+      <div style="text-align:center;margin-top:20px;font:500 13px/1 Barlow,sans-serif;color:#9a9a9a"><span lang="pt">Ainda não tens conta?</span><span lang="en">No account yet?</span> <a onClick="{{ goRegister }}" style="cursor:pointer;font-weight:700;text-decoration:none"><span lang="pt">Regista-te</span><span lang="en">Register</span></a></div>
+    </div>
+  </div>
+</main>
+</sc-if>
+
+<!-- ============ REGISTER ============ -->
+<sc-if value="{{ isRegister }}" hint-placeholder-val="{{ false }}">
+<main data-screen-label="Registo" style="max-width:560px;margin:0 auto;padding:clamp(32px,5vw,56px) clamp(20px,4vw,32px) 64px">
+  <div style="font:700 13px/1 Barlow,sans-serif;letter-spacing:.28em;color:#FFD200;margin-bottom:12px"><span lang="pt">NOVO PILOTO</span><span lang="en">NEW DRIVER</span></div>
+  <h1 style="margin:0 0 6px;font:italic 900 clamp(40px,6vw,60px)/.9 'Barlow Condensed',sans-serif;color:#fff;text-transform:uppercase"><span lang="pt">Cria o teu perfil</span><span lang="en">Create your profile</span></h1>
+  <p style="margin:0 0 26px;font:400 15px/1.55 Barlow,sans-serif;color:#b9b9b9"><span lang="pt">Liga as tuas voltas ao teu nome e começa a subir na tabela.</span><span lang="en">Link your laps to your name and start climbing the board.</span></p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div><label style="display:block;font:700 11px/1 Barlow,sans-serif;letter-spacing:.16em;color:#7d7d7d;margin-bottom:7px"><span lang="pt">NOME</span><span lang="en">FIRST NAME</span></label><input placeholder="Rui" style="width:100%;box-sizing:border-box;background:#1b1b1d;border:1px solid rgba(255,255,255,.14);color:#fff;font-size:15px;padding:13px 14px;outline:none"></div>
+    <div><label style="display:block;font:700 11px/1 Barlow,sans-serif;letter-spacing:.16em;color:#7d7d7d;margin-bottom:7px"><span lang="pt">APELIDO</span><span lang="en">LAST NAME</span></label><input placeholder="Machado" style="width:100%;box-sizing:border-box;background:#1b1b1d;border:1px solid rgba(255,255,255,.14);color:#fff;font-size:15px;padding:13px 14px;outline:none"></div>
+    <div style="grid-column:1/-1"><label style="display:block;font:700 11px/1 Barlow,sans-serif;letter-spacing:.16em;color:#7d7d7d;margin-bottom:7px">EMAIL</label><input type="email" placeholder="piloto@email.com" style="width:100%;box-sizing:border-box;background:#1b1b1d;border:1px solid rgba(255,255,255,.14);color:#fff;font-size:15px;padding:13px 14px;outline:none"></div>
+    <div><label style="display:block;font:700 11px/1 Barlow,sans-serif;letter-spacing:.16em;color:#7d7d7d;margin-bottom:7px"><span lang="pt">TELEMÓVEL</span><span lang="en">PHONE</span></label><input placeholder="9XX XXX XXX" style="width:100%;box-sizing:border-box;background:#1b1b1d;border:1px solid rgba(255,255,255,.14);color:#fff;font-size:15px;padding:13px 14px;outline:none"></div>
+    <div><label style="display:block;font:700 11px/1 Barlow,sans-serif;letter-spacing:.16em;color:#7d7d7d;margin-bottom:7px"><span lang="pt">CATEGORIA</span><span lang="en">CATEGORY</span></label><select style="width:100%;box-sizing:border-box;background:#1b1b1d;border:1px solid rgba(255,255,255,.14);color:#fff;font-size:15px;padding:13px 14px;outline:none"><option>Adulto</option><option>Júnior</option></select></div>
+    <div style="grid-column:1/-1"><label style="display:block;font:700 11px/1 Barlow,sans-serif;letter-spacing:.16em;color:#7d7d7d;margin-bottom:7px"><span lang="pt">PALAVRA-PASSE</span><span lang="en">PASSWORD</span></label><input type="password" placeholder="••••••••" style="width:100%;box-sizing:border-box;background:#1b1b1d;border:1px solid rgba(255,255,255,.14);color:#fff;font-size:15px;padding:13px 14px;outline:none"></div>
+  </div>
+  <label style="display:flex;align-items:flex-start;gap:10px;margin:18px 0 22px;font:400 13px/1.5 Barlow,sans-serif;color:#9a9a9a"><input type="checkbox" style="margin-top:2px"><span><span lang="pt">Aceito o regulamento da pista e a política de privacidade.</span><span lang="en">I accept the track rules and privacy policy.</span></span></label>
+  <a onClick="{{ doLogin }}" style="cursor:pointer;display:block;text-align:center;font:800 16px/1 'Barlow Condensed',sans-serif;letter-spacing:.1em;padding:16px;background:#FFD200;color:#0c0c0d;text-decoration:none;clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)"><span lang="pt">CRIAR CONTA</span><span lang="en">CREATE ACCOUNT</span></a>
+  <div style="text-align:center;margin-top:20px;font:500 13px/1 Barlow,sans-serif;color:#9a9a9a"><span lang="pt">Já tens conta?</span><span lang="en">Already have an account?</span> <a onClick="{{ goLogin }}" style="cursor:pointer;font-weight:700;text-decoration:none"><span lang="pt">Entrar</span><span lang="en">Sign in</span></a></div>
+</main>
+</sc-if>
+
+<!-- ============ PORTAL (AUTHED) ============ -->
+<sc-if value="{{ inPortal }}" hint-placeholder-val="{{ false }}">
+<main data-screen-label="Portal">
+  <!-- portal tab bar -->
+  <div style="border-bottom:1px solid rgba(255,255,255,.08);background:#0c0c0d">
+    <div style="max-width:1180px;margin:0 auto;padding:0 clamp(16px,4vw,48px);display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+      <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5">
+        <a onClick="{{ t.on }}" style="cursor:pointer;font:700 13px/1 Barlow,sans-serif;letter-spacing:.08em;padding:16px 16px;text-decoration:none;color:{{ t.color }};border-bottom:2px solid {{ t.border }}">{{ t.label }}</a>
+      </sc-for>
+      <a onClick="{{ doLogout }}" style="cursor:pointer;margin-left:auto;font:700 12px/1 Barlow,sans-serif;letter-spacing:.1em;padding:8px 14px;text-decoration:none;color:#9a9a9a;border:1px solid rgba(255,255,255,.14)"><span lang="pt">SAIR</span><span lang="en">LOG OUT</span></a>
+    </div>
+  </div>
+
+  <div style="max-width:1180px;margin:0 auto;padding:clamp(24px,4vw,40px) clamp(20px,4vw,48px) 64px">
+
+    <!-- ---------- DASHBOARD ---------- -->
+    <sc-if value="{{ isDash }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:6px"><h1 style="margin:0;font:italic 900 clamp(34px,5vw,52px)/1 'Barlow Condensed',sans-serif;color:#fff;text-transform:uppercase"><span lang="pt">Olá,</span><span lang="en">Hi,</span> {{ driver.first }}</h1><span style="font:italic 800 clamp(34px,5vw,52px)/1 'Barlow Condensed',sans-serif;color:#FFD200">👋</span></div>
+      <p style="margin:0 0 26px;font:400 15px/1.5 Barlow,sans-serif;color:#9a9a9a">{{ driver.cat }} · <span lang="pt">Piloto desde</span><span lang="en">Driver since</span> {{ driver.since }}</p>
+
+      <!-- stat tiles -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:22px">
+        <div style="background:#1b1b1d;border:1px solid rgba(255,255,255,.08);border-top:2px solid #FFD200;padding:18px 20px"><div style="font:700 11px/1 Barlow,sans-serif;letter-spacing:.16em;color:#7d7d7d"><span lang="pt">MELHOR VOLTA</span><span lang="en">BEST LAP</span></div><div style="font:italic 900 40px/1 'Barlow Condensed',sans-serif;color:#FFD200;margin-top:8px">{{ driver.pb }}<span style="font-size:20px;color:#8a8a8a">s</span></div></div>
+        <div style="background:#1b1b1d;border:1px solid rgba(255,255,255,.08);padding:18px 20px"><div style="font:700 11px/1 Barlow,sans-serif;letter-spacing:.16em;color:#7d7d7d"><span lang="pt">POSIÇÃO NA TABELA</span><span lang="en">TRACK RANKING</span></div><div style="font:italic 900 40px/1 'Barlow Condensed',sans-serif;color:#fff;margin-top:8px">#{{ driver.rank }}</div></div>
+        <div style="background:#1b1b1d;border:1px solid rgba(255,255,255,.08);padding:18px 20px"><div style="font:700 11px/1 Barlow,sans-serif;letter-spacing:.16em;color:#7d7d7d"><span lang="pt">SESSÕES</span><span lang="en">SESSIONS</span></div><div style="font:italic 900 40px/1 'Barlow Condensed',sans-serif;color:#fff;margin-top:8px">{{ driver.sessions }}</div></div>
+        <div style="background:#1b1b1d;border:1px solid rgba(255,255,255,.08);padding:18px 20px"><div style="font:700 11px/1 Barlow,sans-serif;letter-spacing:.16em;color:#7d7d7d"><span lang="pt">PÓDIOS</span><span lang="en">PODIUMS</span></div><div style="font:italic 900 40px/1 'Barlow Condensed',sans-serif;color:#fff;margin-top:8px">{{ driver.podiums }}</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px">
+        <!-- progress chart -->
+        <sc-if value="{{ showChart }}" hint-placeholder-val="{{ true }}">
+        <div style="background:#131314;border:1px solid rgba(255,255,255,.08);padding:22px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px"><h3 style="margin:0;font:italic 800 22px/1 'Barlow Condensed',sans-serif;color:#fff;text-transform:uppercase"><span lang="pt">Evolução da volta</span><span lang="en">Lap-time progress</span></h3><span style="font:600 12px/1 Barlow,sans-serif;color:#7d7d7d"><span lang="pt">últimas 8 sessões</span><span lang="en">last 8 sessions</span></span></div>
+          <svg viewBox="0 0 620 230" style="width:100%;height:auto;display:block" data-om-raster="true">
+            <line x1="40" y1="20" x2="40" y2="185" stroke="rgba(255,255,255,.12)" stroke-width="1"></line>
+            <line x1="40" y1="185" x2="610" y2="185" stroke="rgba(255,255,255,.12)" stroke-width="1"></line>
+            <polyline points="{{ chartLine }}" fill="none" stroke="#FFD200" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"></polyline>
+            <sc-for list="{{ chartPts }}" as="c" hint-placeholder-count="8">
+              <circle cx="{{ c.x }}" cy="{{ c.y }}" r="4.5" fill="#0c0c0d" stroke="#FFD200" stroke-width="2.5"></circle>
+              <text x="{{ c.x }}" y="205" fill="#7d7d7d" font-size="11" font-family="Barlow,sans-serif" text-anchor="middle">{{ c.date }}</text>
+            </sc-for>
+            <text x="34" y="24" fill="#7d7d7d" font-size="11" font-family="Barlow,sans-serif" text-anchor="end">{{ chartMax }}</text>
+            <text x="34" y="185" fill="#7d7d7d" font-size="11" font-family="Barlow,sans-serif" text-anchor="end">{{ chartMin }}</text>
+          </svg>
+          <div style="font:400 12px/1.5 Barlow,sans-serif;color:#7d7d7d;margin-top:4px"><span lang="pt">Mais baixo = mais rápido. Melhoraste</span><span lang="en">Lower is faster. You improved</span> <span style="color:#FFD200;font-weight:700">{{ driver.improved }}s</span> <span lang="pt">nesta época.</span><span lang="en">this season.</span></div>
+        </div>
+        </sc-if>
+
+        <!-- PB vs record + next booking -->
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div style="background:#131314;border:1px solid rgba(255,255,255,.08);padding:22px">
+            <h3 style="margin:0 0 16px;font:italic 800 22px/1 'Barlow Condensed',sans-serif;color:#fff;text-transform:uppercase"><span lang="pt">A tua marca vs recorde</span><span lang="en">You vs track record</span></h3>
+            <div style="font:600 12px/1 Barlow,sans-serif;color:#9a9a9a;margin-bottom:6px"><span lang="pt">O TEU MELHOR</span><span lang="en">YOUR BEST</span> · {{ driver.pb }}s</div>
+            <div style="height:20px;background:#0c0c0d;border:1px solid rgba(255,255,255,.08);margin-bottom:14px"><div style="height:100%;width:{{ pbBarW }};background:#FFD200"></div></div>
+            <div style="font:600 12px/1 Barlow,sans-serif;color:#9a9a9a;margin-bottom:6px"><span lang="pt">RECORDE ABSOLUTO</span><span lang="en">ALL-TIME RECORD</span> · {{ record.lap }}s</div>
+            <div style="height:20px;background:#0c0c0d;border:1px solid rgba(255,255,255,.08)"><div style="height:100%;width:100%;background:repeating-linear-gradient(90deg,#4a4a4a 0 10px,#3a3a3a 10px 20px)"></div></div>
+            <div style="font:400 13px/1.5 Barlow,sans-serif;color:#7d7d7d;margin-top:12px"><span lang="pt">Estás a</span><span lang="en">You're</span> <span style="color:#FFD200;font-weight:700">{{ record.gap }}s</span> <span lang="pt">do recorde de {{ record.holder }}.</span><span lang="en">off {{ record.holder }}'s record.</span></div>
+          </div>
+          <div style="position:relative;overflow:hidden;background:#FFD200;padding:22px">
+            <div style="position:absolute;top:0;left:0;right:0;height:10px;background:repeating-conic-gradient(#0c0c0d 0 25%,transparent 0 50%) 0 0/10px 10px"></div>
+            <div style="font:700 11px/1 Barlow,sans-serif;letter-spacing:.2em;color:#0c0c0d;margin-top:6px"><span lang="pt">PRÓXIMA RESERVA</span><span lang="en">NEXT BOOKING</span></div>
+            <div style="font:italic 900 30px/1 'Barlow Condensed',sans-serif;color:#0c0c0d;margin-top:10px">{{ booking.date }} · {{ booking.time }}</div>
+            <div style="font:600 15px/1.4 Barlow,sans-serif;color:#1d1d1d;margin-top:6px">{{ booking.activity }} · {{ booking.note }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- badges -->
+      <h3 style="margin:30px 0 14px;font:italic 800 24px/1 'Barlow Condensed',sans-serif;color:#fff;text-transform:uppercase"><span lang="pt">Conquistas</span><span lang="en">Achievements</span></h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">
+        <sc-for list="{{ badges }}" as="b" hint-placeholder-count="6">
+          <div style="background:{{ b.bg }};border:1px solid {{ b.border }};padding:16px 18px;opacity:{{ b.op }}">
+            <div style="font:italic 900 22px/1 'Barlow Condensed',sans-serif;color:{{ b.titleColor }}">{{ b.label }}</div>
+            <div style="font:400 12.5px/1.4 Barlow,sans-serif;color:#9a9a9a;margin-top:6px">{{ b.sub }}</div>
+            <div style="font:700 10px/1 Barlow,sans-serif;letter-spacing:.14em;color:{{ b.stateColor }};margin-top:10px">{{ b.state }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <!-- ---------- LAP HISTORY ---------- -->
+    <sc-if value="{{ isLaps }}" hint-placeholder-val="{{ false }}">
+      <h1 style="margin:0 0 4px;font:italic 900 clamp(34px,5vw,52px)/1 'Barlow Condensed',sans-serif;color:#fff;text-transform:uppercase"><span lang="pt">Histórico de voltas</span><span lang="en">Lap history</span></h1>
+      <p style="margin:0 0 24px;font:400 15px/1.5 Barlow,sans-serif;color:#9a9a9a"><span lang="pt">Todas as tuas sessões cronometradas.</span><span lang="en">Every one of your timed sessions.</span></p>
+      <div style="background:#131314;border:1px solid rgba(255,255,255,.08)">
+        <div style="display:grid;grid-template-columns:120px 1fr 90px 130px 130px;gap:8px;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.1);font:700 11px/1 Barlow,sans-serif;letter-spacing:.16em;color:#7d7d7d">
+          <span><span lang="pt">DATA</span><span lang="en">DATE</span></span><span>KART</span><span style="text-align:right"><span lang="pt">VOLTAS</span><span lang="en">LAPS</span></span><span style="text-align:right"><span lang="pt">MÉDIA</span><span lang="en">AVG</span></span><span style="text-align:right"><span lang="pt">MELHOR</span><span lang="en">BEST</span></span>
+        </div>
+        <sc-for list="{{ sessions }}" as="s" hint-placeholder-count="8">
+          <div style="display:grid;grid-template-columns:120px 1fr 90px 130px 130px;gap:8px;align-items:center;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.06)">
+            <span style="font:600 15px/1 Barlow,sans-serif;color:#fff">{{ s.date }}</span>
+            <span style="font:500 14px/1 Barlow,sans-serif;color:#c9c9c9">{{ s.kart }}</span>
+            <span style="font:600 15px/1 Barlow,sans-serif;color:#c9c9c9;text-align:right">{{ s.laps }}</span>
+            <span style="font:600 15px/1 'Barlow Condensed',sans-serif;color:#9a9a9a;text-align:right">{{ s.avg }}s</span>
+            <span style="font:800 19px/1 'Barlow Condensed',sans-serif;color:#FFD200;text-align:right">{{ s.best }}<span style="font-size:12px;color:#8a8a8a">s</span></span>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <!-- ---------- PERSONAL RECORDS ---------- -->
+    <sc-if value="{{ isRecs }}" hint-placeholder-val="{{ false }}">
+      <h1 style="margin:0 0 4px;font:italic 900 clamp(34px,5vw,52px)/1 'Barlow Condensed',sans-serif;color:#fff;text-transform:uppercase"><span lang="pt">Recordes pessoais</span><span lang="en">Personal records</span></h1>
+      <p style="margin:0 0 24px;font:400 15px/1.5 Barlow,sans-serif;color:#9a9a9a"><span lang="pt">Os teus melhores tempos por tipo de kart e configuração.</span><span lang="en">Your best times by kart type and setup.</span></p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">
+        <sc-for list="{{ prCards }}" as="p" hint-placeholder-count="4">
+          <div style="background:#1b1b1d;border:1px solid rgba(255,255,255,.08);border-top:2px solid #FFD200;padding:22px">
+            <div style="font:700 11px/1 Barlow,sans-serif;letter-spacing:.16em;color:#7d7d7d">{{ p.label }}</div>
+            <div style="font:italic 900 46px/1 'Barlow Condensed',sans-serif;color:#FFD200;margin-top:10px">{{ p.value }}<span style="font-size:22px;color:#8a8a8a">{{ p.unit }}</span></div>
+            <div style="font:500 13px/1.4 Barlow,sans-serif;color:#a5a5a5;margin-top:8px">{{ p.meta }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <!-- ---------- RACE RESULTS ---------- -->
+    <sc-if value="{{ isRaces }}" hint-placeholder-val="{{ false }}">
+      <h1 style="margin:0 0 4px;font:italic 900 clamp(34px,5vw,52px)/1 'Barlow Condensed',sans-serif;color:#fff;text-transform:uppercase"><span lang="pt">Corridas</span><span lang="en">Race results</span></h1>
+      <p style="margin:0 0 24px;font:400 15px/1.5 Barlow,sans-serif;color:#9a9a9a"><span lang="pt">Eventos disputados e classificações.</span><span lang="en">Events entered and finishing positions.</span></p>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <sc-for list="{{ races }}" as="r" hint-placeholder-count="5">
+          <div style="display:grid;grid-template-columns:64px 1fr auto;gap:16px;align-items:center;background:#131314;border:1px solid rgba(255,255,255,.08);border-left:3px solid {{ r.accent }};padding:16px 20px">
+            <div style="font:italic 900 40px/1 'Barlow Condensed',sans-serif;color:{{ r.posColor }};text-align:center">{{ r.pos }}</div>
+            <div><div style="font:italic 700 22px/1 'Barlow Condensed',sans-serif;color:#fff;text-transform:uppercase">{{ r.event }}</div><div style="font:500 13px/1.4 Barlow,sans-serif;color:#9a9a9a;margin-top:4px">{{ r.date }} · {{ r.field }} <span lang="pt">pilotos</span><span lang="en">drivers</span></div></div>
+            <sc-if value="{{ r.podium }}" hint-placeholder-val="{{ true }}"><span style="font:700 11px/1 Barlow,sans-serif;letter-spacing:.14em;padding:7px 12px;background:#FFD200;color:#0c0c0d">PÓDIO</span></sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <!-- ---------- PROFILE ---------- -->
+    <sc-if value="{{ isProfile }}" hint-placeholder-val="{{ false }}">
+      <h1 style="margin:0 0 4px;font:italic 900 clamp(34px,5vw,52px)/1 'Barlow Condensed',sans-serif;color:#fff;text-transform:uppercase"><span lang="pt">Perfil</span><span lang="en">Profile</span></h1>
+      <p style="margin:0 0 24px;font:400 15px/1.5 Barlow,sans-serif;color:#9a9a9a"><span lang="pt">Os teus dados e definições de piloto.</span><span lang="en">Your driver details and settings.</span></p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px">
+        <div style="background:#131314;border:1px solid rgba(255,255,255,.08);padding:24px">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px"><span style="width:52px;height:52px;border-radius:50%;background:#FFD200;color:#0c0c0d;font:800 22px/52px 'Barlow Condensed',sans-serif;text-align:center">{{ driver.initials }}</span><div><div style="font:italic 800 24px/1 'Barlow Condensed',sans-serif;color:#fff">{{ driver.name }}</div><div style="font:500 13px/1 Barlow,sans-serif;color:#9a9a9a;margin-top:4px">{{ driver.cat }}</div></div></div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div><label style="display:block;font:700 11px/1 Barlow,sans-serif;letter-spacing:.16em;color:#7d7d7d;margin-bottom:7px">EMAIL</label><input value="rui.machado@email.com" style="width:100%;box-sizing:border-box;background:#1b1b1d;border:1px solid rgba(255,255,255,.14);color:#fff;font-size:15px;padding:12px 14px;outline:none"></div>
+            <div><label style="display:block;font:700 11px/1 Barlow,sans-serif;letter-spacing:.16em;color:#7d7d7d;margin-bottom:7px"><span lang="pt">TELEMÓVEL</span><span lang="en">PHONE</span></label><input value="920 268 289" style="width:100%;box-sizing:border-box;background:#1b1b1d;border:1px solid rgba(255,255,255,.14);color:#fff;font-size:15px;padding:12px 14px;outline:none"></div>
+            <div><label style="display:block;font:700 11px/1 Barlow,sans-serif;letter-spacing:.16em;color:#7d7d7d;margin-bottom:7px"><span lang="pt">KART PREFERIDO</span><span lang="en">PREFERRED KART</span></label><select style="width:100%;box-sizing:border-box;background:#1b1b1d;border:1px solid rgba(255,255,255,.14);color:#fff;font-size:15px;padding:12px 14px;outline:none"><option>390cc</option><option>270cc</option></select></div>
+            <a style="cursor:pointer;align-self:flex-start;font:800 14px/1 'Barlow Condensed',sans-serif;letter-spacing:.1em;padding:13px 22px;background:#FFD200;color:#0c0c0d;text-decoration:none;margin-top:4px"><span lang="pt">GUARDAR ALTERAÇÕES</span><span lang="en">SAVE CHANGES</span></a>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div style="position:relative;overflow:hidden;background:#1b1b1d;border:1px solid #FFD200;padding:24px">
+            <div style="font:700 11px/1 Barlow,sans-serif;letter-spacing:.2em;color:#FFD200"><span lang="pt">PARTILHAR</span><span lang="en">SHARE</span></div>
+            <h3 style="margin:10px 0 6px;font:italic 800 26px/1 'Barlow Condensed',sans-serif;color:#fff;text-transform:uppercase"><span lang="pt">A minha melhor volta</span><span lang="en">My best lap</span></h3>
+            <div style="font:italic 900 44px/1 'Barlow Condensed',sans-serif;color:#FFD200;margin:6px 0 12px">{{ driver.pb }}<span style="font-size:22px;color:#8a8a8a">s</span></div>
+            <p style="margin:0 0 16px;font:400 13px/1.5 Barlow,sans-serif;color:#a5a5a5"><span lang="pt">Gera um cartão para partilhar nas redes sociais ou no WhatsApp.</span><span lang="en">Generate a card to share on social media or WhatsApp.</span></p>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <a style="cursor:pointer;font:800 13px/1 'Barlow Condensed',sans-serif;letter-spacing:.08em;padding:12px 18px;background:#FFD200;color:#0c0c0d;text-decoration:none">WHATSAPP</a>
+              <a style="cursor:pointer;font:800 13px/1 'Barlow Condensed',sans-serif;letter-spacing:.08em;padding:12px 18px;border:1px solid rgba(255,255,255,.25);color:#fff;text-decoration:none"><span lang="pt">DESCARREGAR</span><span lang="en">DOWNLOAD</span></a>
+            </div>
+          </div>
+          <div style="background:#131314;border:1px solid rgba(255,255,255,.08);padding:20px 24px">
+            <div style="font:700 11px/1 Barlow,sans-serif;letter-spacing:.16em;color:#7d7d7d;margin-bottom:12px"><span lang="pt">DEFINIÇÕES</span><span lang="en">SETTINGS</span></div>
+            <label style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;font:500 14px/1.3 Barlow,sans-serif;color:#ddd;border-bottom:1px solid rgba(255,255,255,.06)"><span><span lang="pt">Notificar novos recordes</span><span lang="en">Notify me of new records</span></span><input type="checkbox" checked></label>
+            <label style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;font:500 14px/1.3 Barlow,sans-serif;color:#ddd;border-bottom:1px solid rgba(255,255,255,.06)"><span><span lang="pt">Mostrar-me na tabela pública</span><span lang="en">Show me on public board</span></span><input type="checkbox" checked></label>
+            <label style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;font:500 14px/1.3 Barlow,sans-serif;color:#ddd"><span><span lang="pt">Emails de eventos</span><span lang="en">Event emails</span></span><input type="checkbox"></label>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+  </div>
+</main>
+</sc-if>
+
+<!-- ============ FOOTER ============ -->
+<footer style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;padding:32px clamp(20px,4vw,48px);background:#080808;border-top:2px solid #FFD200">
+  <div style="display:flex;flex-direction:column;gap:10px"><img src="https://www.kartodromovilareal.com/themes/kartodromo/images/assets/logo.png" alt="logo" style="height:34px;width:auto;align-self:flex-start"><span style="font:400 13px/1.6 Barlow,sans-serif;color:#8f8f8f">Aeródromo Oeste, 5000-102 Vila Real</span></div>
+  <div style="display:flex;flex-direction:column;gap:8px"><span style="font:700 12px/1 Barlow,sans-serif;letter-spacing:.2em;color:#FFD200">CONTACTO</span><span style="font:600 14px/1.5 Barlow,sans-serif;color:#ddd">920 268 289 · WhatsApp</span></div>
+  <div style="display:flex;flex-direction:column;gap:8px"><span style="font:700 12px/1 Barlow,sans-serif;letter-spacing:.2em;color:#FFD200">HORÁRIO</span><span style="font:600 14px/1.5 Barlow,sans-serif;color:#ddd">Qua–Dom · 10:00–19:30</span></div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1180,&quot;height&quot;:900},&quot;defaultPage&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;records&quot;,&quot;login&quot;,&quot;dashboard&quot;],&quot;default&quot;:&quot;records&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Demo&quot;},&quot;driverName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Rui&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Demo&quot;},&quot;showChart&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Dashboard&quot;}}">
+class Component extends DCLogic {
+  state = { lang: 'pt', page: 'records', period: 'month', seg: 'overall', authed: false, tab: 'dash' };
+
+  componentDidMount() {
+    const dp = this.props.defaultPage;
+    if (dp === 'login') this.setState({ page: 'login' });
+    else if (dp === 'dashboard') this.setState({ page: 'portal', authed: true, tab: 'dash' });
+  }
+
+  fmt(ms) { const s = Math.floor(ms / 1000); const m = String(ms % 1000).padStart(3, '0'); return s + '.' + m; }
+
+  data() {
+    const year = [
+      { name: 'Rui Machado', ms: 43987, cls: '390', cat: 'Adult', laps: 22, date: '12 Mar' },
+      { name: 'Tiago Fontes', ms: 44210, cls: '390', cat: 'Adult', laps: 20, date: '03 Fev' },
+      { name: 'André Nogueira', ms: 44503, cls: '270', cat: 'Adult', laps: 24, date: '28 Jan' },
+      { name: 'Miguel Sá', ms: 44780, cls: '390', cat: 'Adult', laps: 18, date: '15 Abr' },
+      { name: 'Diogo Teixeira', ms: 45012, cls: '270', cat: 'Adult', laps: 21, date: '09 Mai' },
+      { name: 'Beatriz Lima', ms: 45330, cls: '390', cat: 'Adult', laps: 17, date: '22 Fev' },
+      { name: 'João Rebelo', ms: 45890, cls: '270', cat: 'Junior', laps: 19, date: '11 Mar' },
+      { name: 'Hélder Costa', ms: 46105, cls: '270', cat: 'Adult', laps: 23, date: '30 Jun' },
+      { name: 'Inês Duarte', ms: 46540, cls: '270', cat: 'Junior', laps: 16, date: '18 Mai' },
+      { name: 'Nuno Barros', ms: 46820, cls: '390', cat: 'Adult', laps: 20, date: '02 Jul' },
+    ];
+    const month = [
+      { name: 'Rui Machado', ms: 44120, cls: '390', cat: 'Adult', laps: 21, date: '02 Jul' },
+      { name: 'Miguel Sá', ms: 44560, cls: '390', cat: 'Adult', laps: 18, date: '05 Jul' },
+      { name: 'André Nogueira', ms: 44690, cls: '270', cat: 'Adult', laps: 22, date: '01 Jul' },
+      { name: 'Nuno Barros', ms: 45010, cls: '390', cat: 'Adult', laps: 20, date: '09 Jul' },
+      { name: 'Diogo Teixeira', ms: 45240, cls: '270', cat: 'Adult', laps: 19, date: '11 Jul' },
+      { name: 'João Rebelo', ms: 45770, cls: '270', cat: 'Junior', laps: 17, date: '06 Jul' },
+      { name: 'Carla Pinto', ms: 46020, cls: '390', cat: 'Adult', laps: 15, date: '03 Jul' },
+      { name: 'Inês Duarte', ms: 46380, cls: '270', cat: 'Junior', laps: 16, date: '10 Jul' },
+    ];
+    const week = [
+      { name: 'Rui Machado', ms: 44205, cls: '390', cat: 'Adult', laps: 18, date: '11 Jul' },
+      { name: 'Nuno Barros', ms: 44880, cls: '390', cat: 'Adult', laps: 16, date: '12 Jul' },
+      { name: 'André Nogueira', ms: 45090, cls: '270', cat: 'Adult', laps: 20, date: '10 Jul' },
+      { name: 'Diogo Teixeira', ms: 45310, cls: '270', cat: 'Adult', laps: 17, date: '13 Jul' },
+      { name: 'João Rebelo', ms: 45840, cls: '270', cat: 'Junior', laps: 14, date: '12 Jul' },
+      { name: 'Inês Duarte', ms: 46410, cls: '270', cat: 'Junior', laps: 13, date: '11 Jul' },
+    ];
+    return { year, month, week };
+  }
+
+  renderVals() {
+    const en = this.state.lang === 'en';
+    const { page, period, seg, authed, tab } = this.state;
+    const go = (p) => () => this.setState({ page: p });
+    const setTab = (t) => () => this.setState({ tab: t });
+
+    // ---- leaderboard ----
+    const ds = this.data()[period];
+    const match = (r) => seg === 'overall' ? true : seg === 'adult' ? r.cat === 'Adult' : seg === 'junior' ? r.cat === 'Junior' : r.cls === seg;
+    const sorted = ds.filter(match).slice().sort((a, b) => a.ms - b.ms);
+    const leader = sorted.length ? sorted[0].ms : 0;
+    const rankColors = ['#FFD200', '#cfcfcf', '#c8853c'];
+    const rows = sorted.map((r, i) => ({
+      rank: i + 1, name: r.name, lap: this.fmt(r.ms), cls: r.cls + 'cc',
+      cat: r.cat === 'Junior' ? (en ? 'Junior' : 'Júnior') : (en ? 'Adult' : 'Adulto'),
+      catTag: r.cat === 'Junior' ? 'JR' : '', laps: r.laps,
+      gap: i === 0 ? '—' : '+' + ((r.ms - leader) / 1000).toFixed(3),
+      rankColor: i < 3 ? rankColors[i] : '#5a5a5a',
+      rowBg: i === 0 ? 'rgba(255,210,0,.05)' : 'transparent',
+    }));
+    const podium = sorted.slice(0, 3).map((r, i) => ({
+      rank: i + 1, tag: ['P1', 'P2', 'P3'][i], name: r.name, lap: this.fmt(r.ms),
+      cls: r.cls + 'cc', cat: r.cat === 'Junior' ? (en ? 'Junior' : 'Júnior') : (en ? 'Adult' : 'Adulto'),
+      date: r.date, accent: rankColors[i],
+    }));
+
+    const periodDefs = [
+      { key: 'year', pt: 'ANO', en: 'YEAR' },
+      { key: 'month', pt: 'MÊS', en: 'MONTH' },
+      { key: 'week', pt: 'SEMANA', en: 'WEEK' },
+    ];
+    const periodPills = periodDefs.map((p) => ({
+      label: en ? p.en : p.pt, on: () => this.setState({ period: p.key }),
+      bg: period === p.key ? '#FFD200' : 'transparent',
+      color: period === p.key ? '#0c0c0d' : '#cfcfcf',
+      border: period === p.key ? '#FFD200' : 'rgba(255,255,255,.2)',
+    }));
+    const segDefs = [
+      { key: 'overall', pt: 'Geral', en: 'Overall' },
+      { key: '270', pt: '270cc', en: '270cc' },
+      { key: '390', pt: '390cc', en: '390cc' },
+      { key: 'adult', pt: 'Adultos', en: 'Adults' },
+      { key: 'junior', pt: 'Júnior', en: 'Junior' },
+    ];
+    const segPills = segDefs.map((s) => ({
+      label: s[en ? 'en' : 'pt'], on: () => this.setState({ seg: s.key }),
+      bg: seg === s.key ? '#fff' : 'transparent',
+      color: seg === s.key ? '#0c0c0d' : '#9a9a9a',
+      border: seg === s.key ? '#fff' : 'rgba(255,255,255,.18)',
+    }));
+    const periodRange = period === 'year' ? '01 Jan – 14 Jul 2026' : period === 'month' ? (en ? 'July 2026' : 'Julho 2026') : (en ? '8–14 Jul 2026' : '8–14 Jul 2026');
+
+    // ---- driver / portal ----
+    const first = this.props.driverName ?? 'Rui';
+    const dName = (this.props.driverName ?? 'Rui') + ' Machado';
+    const nm = dName.trim().split(/\s+/);
+    const initials = ((nm[0] || '')[0] || '') + ((nm[1] || '')[0] || '');
+    const sessionsRaw = [
+      { date: '05 Dez', kart: '270cc #12', laps: 17, bestMs: 45890, avgMs: 47200 },
+      { date: '18 Dez', kart: '390cc #7', laps: 21, bestMs: 45040, avgMs: 46110 },
+      { date: '02 Jan', kart: '270cc #9', laps: 19, bestMs: 45680, avgMs: 46900 },
+      { date: '14 Jan', kart: '390cc #3', laps: 16, bestMs: 45210, avgMs: 46320 },
+      { date: '26 Jan', kart: '390cc #7', laps: 20, bestMs: 44510, avgMs: 45700 },
+      { date: '09 Fev', kart: '270cc #12', laps: 24, bestMs: 44980, avgMs: 46010 },
+      { date: '27 Fev', kart: '390cc #4', laps: 18, bestMs: 44320, avgMs: 45600 },
+      { date: '12 Mar', kart: '390cc #7', laps: 22, bestMs: 43987, avgMs: 45120 },
+    ];
+    const sessions = sessionsRaw.slice().reverse().map((s) => ({ date: s.date, kart: s.kart, laps: s.laps, best: this.fmt(s.bestMs), avg: this.fmt(s.avgMs) }));
+
+    // chart (chronological L->R)
+    const bests = sessionsRaw.map((s) => s.bestMs);
+    const min = Math.min(...bests), max = Math.max(...bests);
+    const x0 = 55, x1 = 600, y0 = 25, y1 = 180;
+    const step = (x1 - x0) / (bests.length - 1);
+    const chartPts = sessionsRaw.map((s, i) => {
+      const x = Math.round(x0 + i * step);
+      const y = Math.round(y0 + ((s.bestMs - min) / (max - min)) * (y1 - y0));
+      return { x, y, date: s.date, val: this.fmt(s.bestMs) };
+    });
+    const chartLine = chartPts.map((c) => c.x + ',' + c.y).join(' ');
+    const improved = ((max - min) / 1000).toFixed(3);
+
+    const pbMs = 43987;
+    const recordMs = 43512;
+    const record = { lap: this.fmt(recordMs), gap: ((pbMs - recordMs) / 1000).toFixed(3), holder: 'Sérgio Vasconcelos' };
+    const pbBarW = Math.round((recordMs / pbMs) * 100) + '%';
+
+    const badgeDefs = [
+      { label: 'Sub-44', pt: 'Volta abaixo de 44s', en: 'Lap under 44s', got: true },
+      { label: en ? 'Record holder' : 'Recordista', pt: 'Mais rápido do mês', en: 'Fastest this month', got: true },
+      { label: en ? '10 sessions' : '10 Sessões', pt: '10+ sessões concluídas', en: '10+ sessions done', got: true },
+      { label: en ? 'Triple podium' : 'Tríplice Pódio', pt: '3 pódios numa época', en: '3 podiums in a season', got: true },
+      { label: en ? 'Endurance' : 'Maratonista', pt: 'Endurance 60 min', en: 'Endurance 60 min', got: true },
+      { label: 'Sub-43', pt: 'Volta abaixo de 43s', en: 'Lap under 43s', got: false },
+    ];
+    const badges = badgeDefs.map((b) => ({
+      label: b.label, sub: en ? b.en : b.pt,
+      bg: b.got ? '#1b1b1d' : '#131314',
+      border: b.got ? 'rgba(255,210,0,.35)' : 'rgba(255,255,255,.06)',
+      op: b.got ? '1' : '.5',
+      titleColor: b.got ? '#FFD200' : '#6a6a6a',
+      stateColor: b.got ? '#7d7d7d' : '#5a5a5a',
+      state: b.got ? (en ? 'UNLOCKED' : 'DESBLOQUEADO') : (en ? 'LOCKED' : 'BLOQUEADO'),
+    }));
+
+    const prCards = [
+      { label: en ? 'ALL-TIME BEST' : 'MELHOR ABSOLUTA', value: this.fmt(43987), unit: 's', meta: '390cc #7 · 12 Mar' },
+      { label: en ? 'BEST 390cc' : 'MELHOR 390cc', value: this.fmt(43987), unit: 's', meta: '12 Mar 2026' },
+      { label: en ? 'BEST 270cc' : 'MELHOR 270cc', value: this.fmt(44510), unit: 's', meta: '26 Jan 2026' },
+      { label: en ? 'TOTAL LAPS' : 'TOTAL DE VOLTAS', value: '157', unit: '', meta: en ? '8 sessions' : '8 sessões' },
+    ];
+
+    const raceDefs = [
+      { event: 'Grande Prémio de Verão', date: '28 Jun', pos: 1, field: 18 },
+      { event: 'Endurance 60min', date: '14 Mai', pos: 3, field: 12 },
+      { event: 'Taça Vila Real', date: '09 Mar', pos: 2, field: 16 },
+      { event: 'Corrida Noturna', date: '20 Abr', pos: 5, field: 20 },
+      { event: 'Sprint Cup', date: '11 Fev', pos: 7, field: 22 },
+    ];
+    const races = raceDefs.map((r) => ({
+      event: r.event, date: r.date, field: r.field, pos: 'P' + r.pos, podium: r.pos <= 3,
+      accent: r.pos <= 3 ? '#FFD200' : 'rgba(255,255,255,.12)',
+      posColor: r.pos === 1 ? '#FFD200' : r.pos <= 3 ? '#fff' : '#7d7d7d',
+    }));
+
+    const tabDefs = [
+      { key: 'dash', pt: 'RESUMO', en: 'OVERVIEW' },
+      { key: 'laps', pt: 'VOLTAS', en: 'LAPS' },
+      { key: 'recs', pt: 'RECORDES', en: 'RECORDS' },
+      { key: 'races', pt: 'CORRIDAS', en: 'RACES' },
+      { key: 'profile', pt: 'PERFIL', en: 'PROFILE' },
+    ];
+    const tabs = tabDefs.map((t) => ({
+      label: en ? t.en : t.pt, on: setTab(t.key),
+      color: tab === t.key ? '#fff' : '#8a8a8a',
+      border: tab === t.key ? '#FFD200' : 'transparent',
+    }));
+
+    const driver = {
+      name: dName, first, initials: initials.toUpperCase(),
+      cat: en ? 'Adult' : 'Adulto', since: '2023', pb: this.fmt(pbMs),
+      rank: 1, sessions: 8, podiums: 3, improved,
+    };
+    const booking = {
+      date: en ? 'Sat, 19 Jul' : 'Sáb, 19 Jul', time: '15:30',
+      activity: en ? 'Karting · 26 min' : 'Karting · 26 min',
+      note: en ? '390cc booked' : '390cc reservado',
+    };
+
+    return {
+      lang: this.state.lang, authed, notAuthed: !authed,
+      isRecords: page === 'records', isLogin: page === 'login', isRegister: page === 'register',
+      inPortal: page === 'portal',
+      isDash: tab === 'dash', isLaps: tab === 'laps', isRecs: tab === 'recs', isRaces: tab === 'races', isProfile: tab === 'profile',
+      navC: {
+        records: page === 'records' ? '#FFD200' : '#cfcfcf',
+        portal: (page === 'portal' || page === 'login' || page === 'register') ? '#FFD200' : '#cfcfcf',
+      },
+      ptBg: !en ? '#FFD200' : 'transparent', ptColor: !en ? '#0c0c0d' : '#fff',
+      enBg: en ? '#FFD200' : 'transparent', enColor: en ? '#0c0c0d' : '#fff',
+      setPt: () => this.setState({ lang: 'pt' }), setEn: () => this.setState({ lang: 'en' }),
+      goRecords: go('records'), goLogin: go('login'), goRegister: go('register'),
+      goPortal: () => this.setState({ page: this.state.authed ? 'portal' : 'login' }),
+      goDash: () => this.setState({ page: 'portal', tab: 'dash' }),
+      doLogin: () => this.setState({ authed: true, page: 'portal', tab: 'dash' }),
+      doLogout: () => this.setState({ authed: false, page: 'records' }),
+      rows, podium, periodPills, segPills, periodRange,
+      showChart: this.props.showChart !== false,
+      chartPts, chartLine, chartMin: this.fmt(max), chartMax: this.fmt(min),
+      driver, booking, record, pbBarW, badges, prCards, races, sessions, tabs,
+    };
+  }
+}
+</script>
+</body>
+</html>

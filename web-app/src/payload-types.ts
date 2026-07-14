@@ -73,6 +73,7 @@ export interface Config {
     packages: Package;
     extras: Extra;
     'game-modes': GameMode;
+    'lap-records': LapRecord;
     bookings: Booking;
     invites: Invite;
     media: Media;
@@ -90,6 +91,7 @@ export interface Config {
     packages: PackagesSelect<false> | PackagesSelect<true>;
     extras: ExtrasSelect<false> | ExtrasSelect<true>;
     'game-modes': GameModesSelect<false> | GameModesSelect<true>;
+    'lap-records': LapRecordsSelect<false> | LapRecordsSelect<true>;
     bookings: BookingsSelect<false> | BookingsSelect<true>;
     invites: InvitesSelect<false> | InvitesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
@@ -320,6 +322,28 @@ export interface GameMode {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lap-records".
+ */
+export interface LapRecord {
+  id: number;
+  driverName: string;
+  /**
+   * Melhor volta em milissegundos, ex. 43987 = 43.987s
+   */
+  timeMs: number;
+  kartClass: '270' | '390';
+  category: 'adult' | 'junior';
+  laps?: number | null;
+  /**
+   * Quando a volta foi registada (define os períodos Ano/Mês/Semana).
+   */
+  recordedAt: string;
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "bookings".
  */
 export interface Booking {
@@ -455,6 +479,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'game-modes';
         value: number | GameMode;
+      } | null)
+    | ({
+        relationTo: 'lap-records';
+        value: number | LapRecord;
       } | null)
     | ({
         relationTo: 'bookings';
@@ -610,6 +638,21 @@ export interface GameModesSelect<T extends boolean = true> {
   level?: T;
   description?: T;
   descriptionEn?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lap-records_select".
+ */
+export interface LapRecordsSelect<T extends boolean = true> {
+  driverName?: T;
+  timeMs?: T;
+  kartClass?: T;
+  category?: T;
+  laps?: T;
+  recordedAt?: T;
   order?: T;
   updatedAt?: T;
   createdAt?: T;

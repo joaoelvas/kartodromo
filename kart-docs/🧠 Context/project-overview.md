@@ -35,6 +35,7 @@ Parents booking birthday parties need a polished, shareable invite they can send
 /lasergame            → LaserGame: pricing, game modes                       (frontend)
 /grupos               → Group events pricing + info                          (frontend)
 /aniversarios         → Birthday packs + à-la-carte extras                   (frontend)
+/recordes             → Public track records / standings (period × class)   (frontend)
 /convite/[id]         → Standalone shareable birthday invite ("track pass")  (invite)
 /admin                → Payload CMS admin (staff only)                       (payload)
 /api/*                → Payload REST API   ·  /api/graphql                   (payload)
@@ -47,7 +48,7 @@ There is **no public login**. The only authentication is for staff in the Payloa
 ## Navigation
 
 Sticky top header (`src/app/(frontend)/components/Header.tsx`), full width, dark. Logo on the left,
-four nav links (KARTING · LASERGAME · GRUPOS · ANIVERSÁRIOS), then on the right a **PT/EN toggle** and a
+five nav links (KARTING · LASERGAME · GRUPOS · ANIVERSÁRIOS · RECORDES), then on the right a **PT/EN toggle** and a
 yellow **RESERVAR / BOOK NOW** button that opens the booking modal. No sidebar.
 
 The `/convite/[id]` invite is **standalone** — it deliberately has no site header/footer, only its own

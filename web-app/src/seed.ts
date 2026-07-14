@@ -122,6 +122,30 @@ export async function seed(payload: Payload): Promise<void> {
   ]
   for (const data of extras) await payload.create({ collection: 'extras', data })
 
+  // Lap records for the public /recordes board. Dates are relative to boot time so all
+  // three period windows (year / month / week) stay populated in the demo.
+  const now = Date.now()
+  const y = new Date().getFullYear()
+  const mo = new Date().getMonth()
+  const daysAgo = (n: number) => new Date(now - n * 86400000).toISOString()
+  const monthAgo = (n: number, day: number) => new Date(y, mo - n, day).toISOString()
+  const lapRecords = [
+    { driverName: 'André Nogueira', timeMs: 44690, kartClass: '270', category: 'adult', laps: 22, recordedAt: daysAgo(0), order: 1 },
+    { driverName: 'Rui Machado', timeMs: 44120, kartClass: '390', category: 'adult', laps: 21, recordedAt: daysAgo(2), order: 2 },
+    { driverName: 'Miguel Sá', timeMs: 44560, kartClass: '390', category: 'adult', laps: 18, recordedAt: daysAgo(3), order: 3 },
+    { driverName: 'João Rebelo', timeMs: 45770, kartClass: '270', category: 'junior', laps: 17, recordedAt: daysAgo(4), order: 4 },
+    { driverName: 'Nuno Barros', timeMs: 45010, kartClass: '390', category: 'adult', laps: 20, recordedAt: daysAgo(5), order: 5 },
+    { driverName: 'Diogo Teixeira', timeMs: 45240, kartClass: '270', category: 'adult', laps: 19, recordedAt: daysAgo(6), order: 6 },
+    { driverName: 'Carla Pinto', timeMs: 46020, kartClass: '390', category: 'adult', laps: 15, recordedAt: daysAgo(9), order: 7 },
+    { driverName: 'Inês Duarte', timeMs: 46380, kartClass: '270', category: 'junior', laps: 16, recordedAt: daysAgo(11), order: 8 },
+    // Older laps — only surface in the year window (and give some drivers a faster all-time best).
+    { driverName: 'Rui Machado', timeMs: 43987, kartClass: '390', category: 'adult', laps: 22, recordedAt: monthAgo(4, 12), order: 9 },
+    { driverName: 'Tiago Fontes', timeMs: 44210, kartClass: '390', category: 'adult', laps: 20, recordedAt: monthAgo(5, 3), order: 10 },
+    { driverName: 'Beatriz Lima', timeMs: 45330, kartClass: '390', category: 'adult', laps: 17, recordedAt: monthAgo(4, 22), order: 11 },
+    { driverName: 'Hélder Costa', timeMs: 46105, kartClass: '270', category: 'adult', laps: 23, recordedAt: monthAgo(1, 30), order: 12 },
+  ]
+  for (const data of lapRecords) await payload.create({ collection: 'lap-records', data: data as any })
+
   await payload.updateGlobal({ slug: 'site-settings', data: {} })
 
   payload.logger.info('✅ Seed complete.')

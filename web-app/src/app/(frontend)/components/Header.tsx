@@ -12,6 +12,7 @@ const NAV: { href: string; pt: string; en: string }[] = [
   { href: '/lasergame', pt: 'LASERGAME', en: 'LASERGAME' },
   { href: '/grupos', pt: 'GRUPOS', en: 'GROUPS' },
   { href: '/aniversarios', pt: 'ANIVERSÁRIOS', en: 'BIRTHDAYS' },
+  { href: '/recordes', pt: 'RECORDES', en: 'RECORDS' },
 ]
 
 export function Header() {

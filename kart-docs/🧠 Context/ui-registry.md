@@ -17,7 +17,7 @@ class lists here.
 `site-settings` server-side and passes it in). The `(invite)` group does **not** use AppShell.
 
 ### Header — `components/Header.tsx`
-`'use client'`. Sticky dark bar: logo, four nav links (KARTING/LASERGAME/GRUPOS/ANIVERSÁRIOS, active =
+`'use client'`. Sticky dark bar: logo, five nav links (KARTING/LASERGAME/GRUPOS/ANIVERSÁRIOS/RECORDES, active =
 `C.yellow`), PT/EN segmented toggle (`useLang`), and a yellow **RESERVAR/BOOK NOW** CTA calling
 `useBooking().open()`. Also **exports `BookButton`** — a client CTA usable inside server pages, with
 `activity?` and `variant: 'solid' | 'outline' | 'dark'` (solid = yellow `clipL`).
@@ -43,6 +43,14 @@ Page hero used by the activity views (eyebrow + big italic headline + intro + CT
 All are `'use client'`, receive Payload `docs` as props from their server page, and translate with
 `useT`. Match these when adding a new content section.
 
+`RecordsView` (`views/RecordsView.tsx`) is the public track-records board: holds `period`
+(`year`/`month`/`week`) + `seg` (`overall`/`270`/`390`/`adult`/`junior`) UI state and re-ranks the
+selected period's dataset client-side via pure helpers in `src/lib/records.ts` (`fmtLap`, `gap`,
+`rankColor`, `rankEntries`). Its **podium cards and leaderboard table are bespoke inline markup**
+(they don't fit `SectionTitle`/`PriceRow`) — reuse that pattern for future dense data tables. The
+server page (`recordes/page.tsx`) does the Year/Month/Week date-windowing + best-lap-per-driver
+dedup and passes serialized `LapEntry[]` + range labels down.
+
 | View               | Rendered by             | Data props                              |
 | ------------------ | ----------------------- | --------------------------------------- |
 | `HomeView`         | `/page.tsx`             | activities, pricing (karting tiers)     |
@@ -50,6 +58,7 @@ All are `'use client'`, receive Payload `docs` as props from their server page, 
 | `LaserView`        | `/lasergame/page.tsx`   | pricing tiers, game modes               |
 | `GruposView`       | `/grupos/page.tsx`      | group-race pricing tiers                |
 | `AniversariosView` | `/aniversarios/page.tsx`| packages, extras                        |
+| `RecordsView`      | `/recordes/page.tsx`    | year/month/week period datasets + range labels |
 
 ---
 

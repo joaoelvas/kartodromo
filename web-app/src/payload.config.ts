@@ -12,6 +12,7 @@ import { Karts } from './collections/Karts'
 import { PricingTiers } from './collections/PricingTiers'
 import { Packages, Extras } from './collections/Packages'
 import { GameModes } from './collections/GameModes'
+import { LapRecords } from './collections/LapRecords'
 import { Bookings } from './collections/Bookings'
 import { Invites } from './collections/Invites'
 import { SiteSettings } from './globals/SiteSettings'
@@ -38,6 +39,7 @@ export default buildConfig({
     Packages,
     Extras,
     GameModes,
+    LapRecords,
     Bookings,
     Invites,
     Media,

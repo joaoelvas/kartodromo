@@ -83,9 +83,22 @@ This plan reflects how the app is structured and built. Most of it is **already 
 
 ---
 
-## Phase 6 — Likely Next Work (not yet built)
+## Phase 6 — Public Track Records ✅
+
+### 14 Standings page (`/recordes`)
+- `LapRecords` collection (driverName, timeMs, kartClass, category, laps, recordedAt) — public read,
+  designed so the portal's `driver` relationship attaches later without a breaking change.
+- Server page computes Year/Month/Week windows relative to now + best lap per driver; `RecordsView`
+  re-ranks by period × segment client-side (pure helpers in `lib/records.ts`). Podium + leaderboard +
+  yellow CTA to the (future) portal register route. Header nav link added.
+
+## Phase 7 — Likely Next Work (not yet built)
 
 Shape only — confirm scope before building:
+
+- **Driver portal** (`design/design_handoff_portal`) — Payload auth `Drivers` collection (separate
+  from admin `Users`), login/register pages, gated portal routes, per-driver dashboard. Adds the
+  `driver` relationship to `LapRecords`. Needs an email adapter for forgot-password/notifications.
 
 - **Booking management** — richer admin views/filters for `bookings`; optional email/WhatsApp confirmation
   to staff.

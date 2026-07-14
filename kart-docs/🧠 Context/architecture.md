@@ -47,9 +47,9 @@ web-app/
 │       │   ├── layout.tsx          → <html lang="pt">, imports globals.css, fetches site-settings, wraps AppShell
 │       │   ├── globals.css         → font @import, resets, flagpulse keyframe
 │       │   ├── page.tsx            → Homepage (server) → HomeView
-│       │   ├── karting|lasergame|grupos|aniversarios/page.tsx → server pages → *View
+│       │   ├── karting|lasergame|grupos|aniversarios|recordes/page.tsx → server pages → *View
 │       │   ├── components/         → AppShell, Header (+ BookButton), Footer, Hero, ui.tsx
-│       │   └── views/              → HomeView, KartingView, LaserView, GruposView, AniversariosView (client)
+│       │   └── views/              → HomeView, KartingView, LaserView, GruposView, AniversariosView, RecordsView (client)
 │       ├── (invite)/               → standalone invite (NO site header/footer)
 │       │   ├── layout.tsx          → <html>, globals.css, LangProvider only
 │       │   ├── convite/[id]/page.tsx → server: fetch invite by slug, notFound() if missing
@@ -141,6 +141,7 @@ convention. Types are generated into `src/payload-types.ts` (`npm run generate:t
 | Packages        | `packages`      | name, price, highlight, note(+En), order, features[] { text, textEn }                               |
 | Extras          | `extras`        | label(+En), price, order                                                                            |
 | GameModes       | `game-modes`    | name, level ('beginner' \| 'advanced'), description(+En), order                                     |
+| LapRecords      | `lap-records`   | driverName, timeMs (ms), kartClass ('270' \| '390'), category ('adult' \| 'junior'), laps, recordedAt (date), order. Future: optional `driver` relationship (added with the portal). |
 
 ### Operational collections
 

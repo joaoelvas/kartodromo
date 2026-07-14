@@ -8,9 +8,9 @@ done, what is in progress, and what is next.
 ## Current Status
 
 **Phase:** Phase 6 — post-launch iterations
-**Last completed:** Digital birthday invite ("track pass") + admin share URL (commit `b8cd002`)
-**Next:** No active task. Likely candidates in `build-plan.md` Phase 6 (booking management, invite
-generation from bookings, media-backed imagery).
+**Last completed:** Public track records / standings page (`/recordes`) + `LapRecords` collection
+**Next:** Driver portal (`design/design_handoff_portal`) — Payload auth `Drivers` collection, login/
+register, and per-driver dashboard. Adds the `driver` relationship to `LapRecords`.
 
 ---
 
@@ -39,7 +39,11 @@ generation from bookings, media-backed imagery).
 - [x] 12 `ShareUrlField` custom admin field (copy-ready share URL) + import map
 - [x] 13 Invite share metadata: per-invite `generateMetadata` (OG/Twitter) + dynamic `opengraph-image` "track pass" PNG for WhatsApp/social previews (`lib/site.ts` for absolute base URL)
 
-### Phase 6 — Post-launch (not started)
+### Phase 6 — Post-launch
+- [x] 14 Public track records / standings (`/recordes`): `LapRecords` collection + server-computed
+  Year/Month/Week windows (best lap per driver) + `RecordsView` (period × segment toggles, podium,
+  leaderboard, CTA to portal register). Header nav link added.
+- [ ] Driver portal (`design/design_handoff_portal`): Payload auth `Drivers`, login/register, dashboard
 - [ ] Booking management / staff notifications
 - [ ] Generate an invite from the birthday booking flow
 - [ ] Media-backed imagery (replace `*ImageUrl` fallbacks where useful)
