@@ -1,4 +1,5 @@
 import type { Payload } from 'payload'
+import { generateInviteId } from './collections/Invites'
 
 const BASE = 'https://www.kartodromovilareal.com'
 
@@ -131,7 +132,7 @@ export async function seed(payload: Payload): Promise<void> {
 async function seedDemoInvite(payload: Payload): Promise<void> {
   const existing = await payload.find({
     collection: 'invites',
-    where: { childName: { equals: 'Martim' } },
+    where: { childName: { equals: 'Tomás' } },
     limit: 1,
   })
   const doc =
@@ -139,11 +140,12 @@ async function seedDemoInvite(payload: Payload): Promise<void> {
     (await payload.create({
       collection: 'invites',
       data: {
-        childName: 'Martim',
-        age: 8,
-        eventDate: '2026-07-25T15:00',
-        dateText: 'Sábado, 25 Julho 2026',
-        dateTextEn: 'Saturday, 25 July 2026',
+        slug: generateInviteId(),
+        childName: 'Tomás',
+        age: 7,
+        eventDate: '2026-07-18T15:00',
+        dateText: 'Sábado, 18 Julho 2026',
+        dateTextEn: 'Saturday, 18 July 2026',
         timeText: '15:00',
         packText: 'Pack 2 · Karting + LaserGame',
         hostPhone: '351920268289',

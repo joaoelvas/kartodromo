@@ -3,7 +3,7 @@ import crypto from 'crypto'
 
 // URL-safe, unguessable id for the shareable link (e.g. "k3Fq9mZ2pX").
 const ID_ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-const generateInviteId = (len = 10): string => {
+export const generateInviteId = (len = 10): string => {
   const bytes = crypto.randomBytes(len)
   let out = ''
   for (let i = 0; i < len; i++) out += ID_ALPHABET[bytes[i] % ID_ALPHABET.length]
