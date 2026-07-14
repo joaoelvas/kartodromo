@@ -133,6 +133,8 @@ Runs in `payload.config.ts` `onInit` (wrapped in try/catch — a failure logs, n
 - Main content seed returns early if `activities` already has docs.
 - `seedDemoInvite()` runs every boot and creates the demo invite only if one for `childName: 'Martim'`
   doesn't exist; it logs the generated `/convite/{slug}`.
+- `seedLapRecords()` runs every boot and seeds the `/recordes` demo lap records only if the
+  `lap-records` collection is empty (relative `recordedAt` dates so all three period windows populate).
 
 Add seed data by extending the arrays (activities, karts, pricing, modes, packages, extras) and calling
 `payload.create`. Keep it idempotent.

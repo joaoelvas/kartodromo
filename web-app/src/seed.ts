@@ -5,8 +5,9 @@ const BASE = 'https://www.kartodromovilareal.com'
 
 // Idempotent seed: only runs when the activities collection is empty.
 export async function seed(payload: Payload): Promise<void> {
-  // The demo invite is seeded independently so it appears even on already-populated DBs.
+  // The demo invite and lap records seed independently so they appear even on already-populated DBs.
   await seedDemoInvite(payload)
+  await seedLapRecords(payload)
 
   const existing = await payload.count({ collection: 'activities' })
   if (existing.totalDocs > 0) return
@@ -122,8 +123,18 @@ export async function seed(payload: Payload): Promise<void> {
   ]
   for (const data of extras) await payload.create({ collection: 'extras', data })
 
-  // Lap records for the public /recordes board. Dates are relative to boot time so all
-  // three period windows (year / month / week) stay populated in the demo.
+  await payload.updateGlobal({ slug: 'site-settings', data: {} })
+
+  payload.logger.info('✅ Seed complete.')
+}
+
+// Lap records for the public /recordes board. Idempotent; safe to run every boot so the demo
+// data appears even on already-populated DBs. Dates are relative to boot time so all three
+// period windows (year / month / week) stay populated.
+async function seedLapRecords(payload: Payload): Promise<void> {
+  const existing = await payload.count({ collection: 'lap-records' })
+  if (existing.totalDocs > 0) return
+
   const now = Date.now()
   const y = new Date().getFullYear()
   const mo = new Date().getMonth()
@@ -145,10 +156,7 @@ export async function seed(payload: Payload): Promise<void> {
     { driverName: 'Hélder Costa', timeMs: 46105, kartClass: '270', category: 'adult', laps: 23, recordedAt: monthAgo(1, 30), order: 12 },
   ]
   for (const data of lapRecords) await payload.create({ collection: 'lap-records', data: data as any })
-
-  await payload.updateGlobal({ slug: 'site-settings', data: {} })
-
-  payload.logger.info('✅ Seed complete.')
+  payload.logger.info('🏁 Seeded lap records.')
 }
 
 // Demo birthday invite. Idempotent; safe to run every boot. The slug (share id)

@@ -172,8 +172,8 @@ Admin groups: content collections + SiteSettings under **Conteúdo/Reservas**; B
   needs a committed migration: `npm run payload migrate:create <name>`, then commit the generated files
   under `src/migrations/` (and the updated `index.ts`).
 - **Seed** (`src/seed.ts`) runs in `payload.config.ts` `onInit`. It is idempotent: the main content seed
-  only runs when `activities` is empty; `seedDemoInvite()` runs every boot and creates the demo invite
-  only if one for "Martim" doesn't exist (it logs the generated `/convite/{slug}`).
+  only runs when `activities` is empty; `seedDemoInvite()` and `seedLapRecords()` run every boot and seed
+  the demo invite / `/recordes` lap records only if missing (so they appear on already-populated DBs).
 
 ---
 
