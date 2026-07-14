@@ -31,3 +31,14 @@ button {
 img {
   max-width: 100%;
 }
+
+/* Pulsing checkered eyebrow flag on the birthday invite. */
+@keyframes flagpulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}

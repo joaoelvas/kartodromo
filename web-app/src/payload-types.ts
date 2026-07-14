@@ -74,6 +74,7 @@ export interface Config {
     extras: Extra;
     'game-modes': GameMode;
     bookings: Booking;
+    invites: Invite;
     media: Media;
     users: User;
     'payload-kv': PayloadKv;
@@ -90,6 +91,7 @@ export interface Config {
     extras: ExtrasSelect<false> | ExtrasSelect<true>;
     'game-modes': GameModesSelect<false> | GameModesSelect<true>;
     bookings: BookingsSelect<false> | BookingsSelect<true>;
+    invites: InvitesSelect<false> | InvitesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -336,6 +338,52 @@ export interface Booking {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "invites".
+ */
+export interface Invite {
+  id: number;
+  /**
+   * Auto-generated id. Drives the share URL: /convite/{slug}
+   */
+  slug: string;
+  /**
+   * Guest of honour.
+   */
+  childName: string;
+  age: number;
+  /**
+   * ISO datetime that drives the countdown, e.g. 2026-07-25T15:00
+   */
+  eventDate: string;
+  /**
+   * Human-readable date, e.g. Sábado, 25 Julho 2026
+   */
+  dateText: string;
+  /**
+   * English date label (optional).
+   */
+  dateTextEn?: string | null;
+  /**
+   * e.g. 15:00
+   */
+  timeText: string;
+  /**
+   * e.g. Pack 2 · Karting + LaserGame
+   */
+  packText: string;
+  /**
+   * English pack label (optional).
+   */
+  packTextEn?: string | null;
+  /**
+   * RSVP WhatsApp target, digits only, e.g. 351920268289
+   */
+  hostPhone: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
@@ -411,6 +459,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'bookings';
         value: number | Booking;
+      } | null)
+    | ({
+        relationTo: 'invites';
+        value: number | Invite;
       } | null)
     | ({
         relationTo: 'media';
@@ -576,6 +628,24 @@ export interface BookingsSelect<T extends boolean = true> {
   people?: T;
   message?: T;
   status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "invites_select".
+ */
+export interface InvitesSelect<T extends boolean = true> {
+  slug?: T;
+  childName?: T;
+  age?: T;
+  eventDate?: T;
+  dateText?: T;
+  dateTextEn?: T;
+  timeText?: T;
+  packText?: T;
+  packTextEn?: T;
+  hostPhone?: T;
   updatedAt?: T;
   createdAt?: T;
 }

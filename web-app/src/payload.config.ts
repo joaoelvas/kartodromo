@@ -13,6 +13,7 @@ import { PricingTiers } from './collections/PricingTiers'
 import { Packages, Extras } from './collections/Packages'
 import { GameModes } from './collections/GameModes'
 import { Bookings } from './collections/Bookings'
+import { Invites } from './collections/Invites'
 import { SiteSettings } from './globals/SiteSettings'
 import { seed } from './seed'
 
@@ -25,6 +26,10 @@ export default buildConfig({
     meta: {
       titleSuffix: '— Kartódromo Vila Real',
     },
+    // Resolve custom admin component paths (e.g. '/components/...') relative to src.
+    importMap: {
+      baseDir: path.resolve(dirname),
+    },
   },
   collections: [
     Activities,
@@ -34,6 +39,7 @@ export default buildConfig({
     Extras,
     GameModes,
     Bookings,
+    Invites,
     Media,
     Users,
   ],
