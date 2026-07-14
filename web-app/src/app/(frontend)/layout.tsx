@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   title: 'Kartódromo Vila Real — Karting, LaserGame, Aniversários',
   description:
     'Pista de karting categoria 1, LaserGame indoor, festas de aniversário e eventos de grupo em Vila Real.',
+  // Stop the browser auto-linking phone numbers into tel: links (causes a hydration mismatch
+  // on the footer contact number).
+  formatDetection: { telephone: false },
 }
 
 export default async function FrontendLayout({ children }: { children: React.ReactNode }) {
