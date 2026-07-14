@@ -89,6 +89,14 @@ On-brand 404: big italic yellow "Fora de pista", bilingual line, link home.
 Minimal root layout: `<html lang="pt">`, imports `../(frontend)/globals.css`, wraps children in
 `LangProvider` only (no AppShell / header / footer / BookingProvider).
 
+### Invite share metadata + OG image — `(invite)/convite/[id]/`
+`page.tsx` exports `generateMetadata` (per-invite title `"{childName} faz {age} anos! 🏁"`, description
+with date/time/place, Open Graph + Twitter `summary_large_image`, `metadataBase` from `siteUrl()`).
+`opengraph-image.tsx` renders a 1200×630 branded "track pass" PNG via `next/og` `ImageResponse` — yellow
+header band, big child name, "FAZ {age}" pill, date line — loading Barlow Condensed ExtraBold from Google
+Fonts with a graceful fallback to the built-in font. Next auto-wires this file into the invite's
+`og:image`. `siteUrl()` lives in `src/lib/site.ts` (uses `NEXT_PUBLIC_SERVER_URL` / `RAILWAY_PUBLIC_DOMAIN`).
+
 ---
 
 ## Custom Admin Field — `src/components/admin/ShareUrlField.tsx`

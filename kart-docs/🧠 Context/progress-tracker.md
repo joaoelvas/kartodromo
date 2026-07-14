@@ -37,6 +37,7 @@ generation from bookings, media-backed imagery).
 - [x] 10 `Invites` collection with auto-generated unguessable slug (read-only) + public read
 - [x] 11 `(invite)` route group: standalone layout, `convite/[id]`, `InviteView` (countdown + WhatsApp RSVP), not-found
 - [x] 12 `ShareUrlField` custom admin field (copy-ready share URL) + import map
+- [x] 13 Invite share metadata: per-invite `generateMetadata` (OG/Twitter) + dynamic `opengraph-image` "track pass" PNG for WhatsApp/social previews (`lib/site.ts` for absolute base URL)
 
 ### Phase 6 — Post-launch (not started)
 - [ ] Booking management / staff notifications
