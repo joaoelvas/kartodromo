@@ -39,12 +39,18 @@ visual source of truth. Tokens live in `src/lib/styles.ts` (see ui-tokens.md).
 
 ## Layout
 
-- Dark page (`C.ink`) throughout. Content sits in a centered column; sections use generous vertical
-  padding.
+- Dark page (`C.ink`) throughout. Content sits in a centered column, **max width `1280px`**.
+- Section padding: horizontal `clamp(20px,4vw,48px)`, vertical `44–56px`.
+- Responsive grids are **mobile-first with no media queries**: `repeat(auto-fit, minmax(230–340px, 1fr))`
+  with `gap: 18–24px`.
+- Spacing scale: multiples of 4px (6, 8, 12, 14, 18, 22, 28…).
 - Header is **sticky**, full width, `padding: 12px 32px`, `background: rgba(12,12,13,.97)`, bottom
   hairline `C.line`. It wraps on small screens (`flexWrap: 'wrap'`).
+- Optional diagonal background texture: the `stripes` token
+  (`repeating-linear-gradient(115deg, transparent 0 340px, rgba(255,210,0,.05) 340px 420px)`).
 - Use fluid `clamp()` type so headings scale down to ~320px. The invite card caps at `max-width: 520px`;
   the booking modal at `860px`.
+- Touch targets ≥ 44px; body text ≥ 15px, nothing below 12px.
 
 ---
 
@@ -138,3 +144,5 @@ home). Match that tone for any new empty/404 state — dark, italic Barlow Conde
 - Never use upright, regular-weight Barlow Condensed for display — headings are italic 800–900 uppercase.
 - Never build a rectangular yellow primary button — use the `clipL` angled edge (or `BookButton`).
 - Never build a wa.me link without stripping non-digits from the number first.
+- Never overuse yellow — CTAs, prices, numbers, and one highlight per section only; never yellow-on-yellow.
+- Provide a direct `tel:` link alongside WhatsApp CTAs (the invite already does this).

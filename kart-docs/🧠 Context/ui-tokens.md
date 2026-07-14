@@ -1,9 +1,15 @@
 # UI Tokens
 
-Design tokens for Kartódromo Vila Real. The brand is **dark + racing-yellow** with a motorsport "track
-pass" motif (checkered flags, clipped/angled buttons, dashed perforations). All tokens live in
-**`web-app/src/lib/styles.ts`** and are applied via **inline styles** — this project does **not** use
-Tailwind, CSS modules, or a `tailwind.config`. See also `design/DESIGN_GUIDELINES.md` at the repo root.
+Design tokens for Kartódromo Vila Real. The brand direction is **Racing-Bold** (design guidelines v1.0):
+carbon black, vivid yellow, condensed-italic display type, checkered-flag accents. Dark + racing-yellow
+with a motorsport "track pass" motif (checkered flags, clipped/angled buttons, dashed perforations). All
+tokens live in **`web-app/src/lib/styles.ts`** and are applied via **inline styles** — this project does
+**not** use Tailwind, CSS modules, or a `tailwind.config`. The canonical brand reference is
+**`design/DESIGN_GUIDELINES.md`** at the repo root (colors, type, components, layout).
+
+**Golden rule — yellow is rare by design.** `C.yellow` is used only for CTAs, prices, numbers, and **one
+highlight per section**. Never yellow-on-yellow. Text on a yellow surface is always `C.ink` (`#0C0C0D`).
+Links are `C.yellow`, hover `C.yellowSoft` (`#ffdf4d`).
 
 ---
 
@@ -70,6 +76,23 @@ export const stripes: React.CSSProperties = {
 
 ---
 
+## Named tokens (design guidelines → code)
+
+The brand guideline names map onto the `C` tokens:
+
+| Guideline name | Token       | Hex       | Role                               |
+| -------------- | ----------- | --------- | ---------------------------------- |
+| Carbon Black   | `C.ink`     | `#0C0C0D` | Base background / text-on-yellow   |
+| Track Yellow   | `C.yellow`  | `#FFD200` | Action, highlight, prices, numbers |
+| Charcoal       | `C.panel`   | `#131314` | Alternate section background       |
+| Surface        | `C.card`    | `#1B1B1D` | Cards                              |
+| Soft Text      | `C.muted`   | `#B9B9B9` | Body paragraphs                    |
+| Faint Text     | `C.faint`   | `#7D7D7D` | Labels, eyebrows, meta             |
+| Hairline       | `C.line`    | `rgba(255,255,255,.08)` | Card borders          |
+| Divider        | `C.lineStrong` (≈) | `rgba(255,255,255,.1–.2)` | Dividers / input borders |
+
+---
+
 ## Fonts
 
 Loaded via Google Fonts `@import` at the top of `src/app/(frontend)/globals.css` (imported by both the
@@ -127,13 +150,28 @@ background: C.card (or C.panel for larger surfaces)
 border: 1px solid C.line   (use C.lineStrong for emphasis / inputs)
 ```
 
-### Primary button (CTA)
+### Buttons (three variants — see `BookButton`)
+**Primary** — the signature diagonal cut:
 ```
 font: 800 16–17px 'Barlow Condensed'; letter-spacing: .1em
 padding: 16px 26px            (invite CTA: 17px 34px)
 background: C.yellow; color: C.ink; border: none
 clip-path: clipL              (header CTA uses a tighter 8px polygon)
 ```
+**Secondary (outline)** — `background: transparent; color: C.text; border: 2px solid` (guideline
+`rgba(255,255,255,.35)`; code uses `C.lineStrong`); no clip-path.
+**Inverse (on yellow blocks)** — `background: C.ink; color: C.yellow`.
+
+All CTAs lighten yellow to `C.yellowSoft` on hover; touch targets ≥ 44px.
+
+### Highlight card (guideline pattern)
+```
+background: C.card; border: 1px solid C.line
+border-top: 2px solid C.yellow            (yellow top border on the content block)
+image halo: radial-gradient(closest-side, rgba(255,210,0,.14), transparent 75%)
+hover: border → C.yellow
+```
+The booking modal uses the same idea: `C.panel` surface with a 3px yellow top border.
 
 ### Segmented PT/EN toggle
 ```
@@ -177,3 +215,6 @@ circles use `50%`. Avoid rounded cards.
 - Both fonts come from the `globals.css` `@import`; keep that link's weight/italic axes in sync if you
   add a new weight.
 - Keep the racing motifs (checkered strips, dashed rules, angled clips) consistent — they are the brand.
+- **Yellow is rare:** only CTAs, prices, numbers, and one highlight per section. Never yellow-on-yellow;
+  text on yellow is always `C.ink`.
+- **Minimum type:** body ≥ 15px; nothing below 12px anywhere. Touch targets ≥ 44px.
